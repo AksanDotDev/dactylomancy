@@ -66,7 +66,7 @@ async def setup(bot: commands.Bot):
                 "Only proxied messages can be edited.",
                 ephemeral=True
             )
-    
+
     @bot.tree.context_menu()
     async def delete(
                 interaction: discord.Interaction,
