@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Working (i.e. secret containing) config file
+test.toml
+
+# Local config
+.vscode
