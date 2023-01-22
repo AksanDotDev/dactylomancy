@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from typing import Optional
 
 
 class ReplyModal(discord.ui.Modal, title="Reply"):
@@ -44,7 +45,25 @@ async def setup(bot: commands.Bot):
         await interaction.response.send_message(
             "Sent.",
             ephemeral=True,
-            delete_after=0.0
+            delete_after=bot.zeroth_ring.timeout
+        )
+
+    @bot.tree.command()
+    async def upload(
+                interaction: discord.Interaction,
+                attachment: discord.Attachment,
+                spoiler: bot.zeroth_ring.switch = bot.zeroth_ring.switch(0),
+                caption: Optional[str] = ""
+            ):
+        att_file = await attachment.to_file(spoiler=bool(spoiler))
+        await interaction.channel.send(
+            caption,
+            file=att_file
+        )
+        await interaction.response.send_message(
+            "Uploaded.",
+            ephemeral=True,
+            delete_after=bot.zeroth_ring.timeout
         )
 
     @bot.tree.context_menu()
@@ -77,7 +96,7 @@ async def setup(bot: commands.Bot):
             await interaction.response.send_message(
                 "Deleted.",
                 ephemeral=True,
-                delete_after=0.0
+                delete_after=bot.zeroth_ring.timeout
             )
         else:
             await interaction.response.send_message(

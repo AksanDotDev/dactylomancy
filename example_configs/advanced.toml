@@ -1,0 +1,19 @@
+# This is a complete config.
+
+title = "Advanced Example"
+
+[discord]
+token = <bot-token>
+# The token of the bot to be used as proxy.
+scribe = <snowflake-id>
+# The snowflake id of the account that will be scribing for the proxy,
+# i.e. the standard user account that will type the messages.
+
+[logging]
+filename = "./dactylomancy.log"
+level = "WARNING"
+
+[interface]
+timeout = 0.0
+switch_on = "Yes"
+switch_off = "No"
