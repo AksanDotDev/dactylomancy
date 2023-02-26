@@ -15,5 +15,3 @@ level = "WARNING"
 
 [interface]
 timeout = 0.0
-switch_on = "Yes"
-switch_off = "No"

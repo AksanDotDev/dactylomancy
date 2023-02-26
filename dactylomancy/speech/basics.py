@@ -9,12 +9,16 @@ class ReplyModal(discord.ui.Modal, title="Reply"):
         style=discord.TextStyle.long
     )
 
-    def __init__(self, *, message: discord.Message) -> None:
+    def __init__(self, *, message: discord.Message, mention: bool) -> None:
         super().__init__()
         self.message = message
+        self.mention = mention
 
     async def on_submit(self, interaction: discord.Interaction):
-        await self.message.reply(self.body)
+        await self.message.reply(
+            self.body,
+            mention_author=self.mention
+        )
         await interaction.response.defer(thinking=False)
 
 
@@ -52,7 +56,7 @@ async def setup(bot: commands.Bot):
     async def upload(
                 interaction: discord.Interaction,
                 attachment: discord.Attachment,
-                spoiler: bot.zeroth_ring.switch = bot.zeroth_ring.switch(0),
+                spoiler: bool,
                 caption: Optional[str] = ""
             ):
         att_file = await attachment.to_file(spoiler=bool(spoiler))
@@ -71,7 +75,20 @@ async def setup(bot: commands.Bot):
                 interaction: discord.Interaction,
                 message: discord.Message
             ):
-        await interaction.response.send_modal(ReplyModal(message=message))
+        await interaction.response.send_modal(
+            ReplyModal(message=message, mention=True)
+        )
+
+    @bot.tree.context_menu(
+        name="Silent Reply"
+    )
+    async def silent_reply(
+                interaction: discord.Interaction,
+                message: discord.Message
+            ):
+        await interaction.response.send_modal(
+            ReplyModal(message=message, mention=False)
+        )
 
     @bot.tree.context_menu()
     async def edit(

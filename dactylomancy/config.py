@@ -1,6 +1,5 @@
 import tomlkit
 import logging
-from enum import Enum
 from discord.utils import setup_logging as discord_logging
 
 
@@ -23,16 +22,6 @@ class ZerothRing():
         if "interface" not in self.state:
             self.state["interface"] = {
                 "timeout": 0.0,
-                "switch_on": "Yes",
-                "switch_off": "No",
             }
 
         self.timeout = self.state["interface"]["timeout"]
-        self.switch = Enum(
-            "SwitchInt",
-            [
-                (self.state["interface"]["switch_on"], 1),
-                (self.state["interface"]["switch_off"], 0)
-            ],
-            type=int,
-        )
