@@ -28,6 +28,7 @@ async def on_ready():
 
 async def load_extensions():
     await hand.load_extension("speech.basics")
+    await hand.load_extension("presence.basics")
 
 
 async def main():
