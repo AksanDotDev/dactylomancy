@@ -133,3 +133,6 @@ test.toml
 
 # Local config
 .vscode
+
+# Non-code Resources
+resources/
