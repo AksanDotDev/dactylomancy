@@ -49,7 +49,7 @@ async def setup(bot: commands.Bot):
         await interaction.response.send_message(
             "Sent.",
             ephemeral=True,
-            delete_after=bot.zeroth_ring.timeout
+            delete_after=bot.zeroth_ring["interface"]["timeout"]
         )
 
     @bot.tree.command()
@@ -67,7 +67,7 @@ async def setup(bot: commands.Bot):
         await interaction.response.send_message(
             "Uploaded.",
             ephemeral=True,
-            delete_after=bot.zeroth_ring.timeout
+            delete_after=bot.zeroth_ring["interface"]["timeout"]
         )
 
     @bot.tree.context_menu()
@@ -113,7 +113,7 @@ async def setup(bot: commands.Bot):
             await interaction.response.send_message(
                 "Deleted.",
                 ephemeral=True,
-                delete_after=bot.zeroth_ring.timeout
+                delete_after=bot.zeroth_ring["interface"]["timeout"]
             )
         else:
             await interaction.response.send_message(

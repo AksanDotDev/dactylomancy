@@ -4,9 +4,15 @@ import asyncio
 from discord.ext import commands
 from config import ZerothRing
 
+
+intents = discord.Intents.default()
+
+intents.presences = True
+intents.members = True
+
 hand = commands.Bot(
     command_prefix=commands.when_mentioned,
-    intents=discord.Intents.default()
+    intents=intents
 )
 
 # Assign the state management class to the bot for ease of keeping track of it.
