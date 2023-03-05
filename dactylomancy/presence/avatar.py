@@ -7,7 +7,7 @@ from pathlib import Path
 # Set the resource path
 # Not in config because this module is intended to beself contained
 # It is also likely to require overhaul for your purposes
-resources = Path("./resources")
+resources = Path("/res")
 
 utc = datetime.timezone.utc
 update_times = []
