@@ -9,7 +9,6 @@ from pathlib import Path
 # It is also likely to require overhaul for your purposes
 resources = Path("/res")
 
-utc = datetime.timezone.utc
 update_times = []
 simple_dates = {
     1: 0,
@@ -30,21 +29,21 @@ complex_dates = {
 
 for i in range(0, 24, 4):
     update_times.append(datetime.time(
-        hour=i, tzinfo=utc
+        hour=i, tzinfo=datetime.timezone.utc
     ))
 
 
 async def setup(bot: commands.Bot):
 
     def get_current_avatar_folder():
-        now = datetime.utcnow()
+        now = datetime.datetime.utcnow()
         if now.month in simple_dates:
-            season = simple_dates[now.month]
+            season = str(simple_dates[now.month])
         else:
             info = complex_dates[now.month]
-            season = info[1] if now.day < info[0] else info[2]
+            season = str(info[1] if now.day < info[0] else info[2])
         if bot.zeroth_ring["presence"]["makeup"]:
-            avatar_folder = resources / season / (now.hour//4)
+            avatar_folder = resources / season / str(now.hour//4)
         else:
             avatar_folder = resources / season
         return avatar_folder
@@ -60,7 +59,7 @@ async def setup(bot: commands.Bot):
     async def avatar(interaction: discord.Interaction):
         avatar_folder = get_current_avatar_folder()
         await interaction.channel.send(
-            file=avatar_folder / "avatar_xl.png"
+            file=discord.File(avatar_folder / "avatar_xl.png")
         )
         await interaction.response.send_message(
             "Shared.",
@@ -69,19 +68,12 @@ async def setup(bot: commands.Bot):
         )
 
     @bot.tree.command()
-    async def basic(interaction: discord.Interaction):
-        with open("./resources/basic.png", "rb") as image:
-            f = image.read()
-        await bot.user.edit(avatar=f)
+    async def makeup(interaction: discord.Interaction, makeup: bool):
+        bot.zeroth_ring["presence"]["makeup"] = makeup
+        bot.zeroth_ring.write_back()
+        await update_avatar()
         await interaction.response.send_message(
-            "Done."
-        )
-
-    @bot.tree.command()
-    async def invert(interaction: discord.Interaction):
-        with open("./resources/invert.png", "rb") as image:
-            f = image.read()
-        await bot.user.edit(avatar=f)
-        await interaction.response.send_message(
-            "Done."
+            "Set and updated.",
+            ephemeral=True,
+            delete_after=bot.zeroth_ring["interface"]["timeout"]
         )
