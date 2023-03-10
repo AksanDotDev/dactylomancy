@@ -55,6 +55,11 @@ async def setup(bot: commands.Bot):
             avatar_bytes = avatar.read()
         await bot.user.edit(avatar=avatar_bytes)
 
+    @bot.listen("on_ready")
+    async def setup_presence():
+        await update_avatar()
+        update_avatar.start()
+
     @bot.tree.command()
     async def avatar(interaction: discord.Interaction):
         avatar_folder = get_current_avatar_folder()
