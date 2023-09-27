@@ -42,9 +42,9 @@ async def setup(bot: commands.Bot):
 
     @bot.tree.command()
     async def echo(
-                interaction: discord.Interaction,
-                body: str
-            ):
+        interaction: discord.Interaction,
+        body: str
+    ):
         await interaction.channel.send(body)
         await interaction.response.send_message(
             "Sent.",
@@ -54,11 +54,11 @@ async def setup(bot: commands.Bot):
 
     @bot.tree.command()
     async def upload(
-                interaction: discord.Interaction,
-                attachment: discord.Attachment,
-                spoiler: bool,
-                caption: Optional[str] = ""
-            ):
+        interaction: discord.Interaction,
+        attachment: discord.Attachment,
+        spoiler: bool,
+        caption: Optional[str] = ""
+    ):
         att_file = await attachment.to_file(spoiler=bool(spoiler))
         await interaction.channel.send(
             caption,
@@ -72,9 +72,9 @@ async def setup(bot: commands.Bot):
 
     @bot.tree.context_menu()
     async def reply(
-                interaction: discord.Interaction,
-                message: discord.Message
-            ):
+        interaction: discord.Interaction,
+        message: discord.Message
+    ):
         await interaction.response.send_modal(
             ReplyModal(message=message, mention=True)
         )
@@ -83,18 +83,18 @@ async def setup(bot: commands.Bot):
         name="Silent Reply"
     )
     async def silent_reply(
-                interaction: discord.Interaction,
-                message: discord.Message
-            ):
+        interaction: discord.Interaction,
+        message: discord.Message
+    ):
         await interaction.response.send_modal(
             ReplyModal(message=message, mention=False)
         )
 
     @bot.tree.context_menu()
     async def edit(
-                interaction: discord.Interaction,
-                message: discord.Message
-            ):
+        interaction: discord.Interaction,
+        message: discord.Message
+    ):
         if message.author.id == bot.user.id:
             await interaction.response.send_modal(EditModal(message=message))
         else:
@@ -105,9 +105,9 @@ async def setup(bot: commands.Bot):
 
     @bot.tree.context_menu()
     async def delete(
-                interaction: discord.Interaction,
-                message: discord.Message
-            ):
+        interaction: discord.Interaction,
+        message: discord.Message
+    ):
         if message.author.id == bot.user.id:
             await message.delete()
             await interaction.response.send_message(

@@ -49,9 +49,9 @@ async def setup(bot: commands.Bot):
         discord.app_commands.Choice(name="Follow", value="follow")
     ])
     async def status(
-                interaction: discord.Interaction,
-                status: discord.app_commands.Choice[str],
-            ):
+        interaction: discord.Interaction,
+        status: discord.app_commands.Choice[str],
+    ):
         if status.value == "follow":
             bot.zeroth_ring["presence"]["follow"] = True
             bot.add_listener(status_follower, "on_presence_update")
@@ -76,10 +76,10 @@ async def setup(bot: commands.Bot):
         discord.app_commands.Choice(name="Competing in", value="competing")
     ])
     async def activity(
-                interaction: discord.Interaction,
-                activity: discord.app_commands.Choice[str],
-                message: str
-            ):
+        interaction: discord.Interaction,
+        activity: discord.app_commands.Choice[str],
+        message: str
+    ):
         bot.zeroth_ring["presence"]["activity"] = activity.value
         bot.zeroth_ring["presence"]["message"] = message
         bot.zeroth_ring.write_back()
