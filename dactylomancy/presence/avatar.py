@@ -44,7 +44,7 @@ async def setup(bot: commands.Bot):
             info = complex_dates[now.month]
             season = info[1] if now.day < info[0] else info[2]
         if bot.zeroth_ring["presence"]["makeup"]:
-            avatar_folder = resources / season / (now.hour//4)
+            avatar_folder = resources / season / (now.hour // 4)
         else:
             avatar_folder = resources / season
         return avatar_folder
