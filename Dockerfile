@@ -1,5 +1,5 @@
 # Stage 1
-FROM python:3.10-buster AS compiler
+FROM python:3.11-bookworm AS compiler
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends build-essential gcc
 
@@ -15,7 +15,7 @@ COPY ./dactylomancy /opt/venv
 
 
 #Stage 2
-FROM python:3.10-alpine
+FROM python:3.11-alpine
 WORKDIR /opt/venv
 
 COPY --from=compiler /opt/venv /opt/venv
