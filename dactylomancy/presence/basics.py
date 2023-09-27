@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from typing import Optional
 
 status_mapping = {
     discord.Status.online: "online",
@@ -92,6 +93,20 @@ async def setup(bot: commands.Bot):
         await bot.change_presence(
             activity=new_activity,
             status=bot.zeroth_ring["presence"]["status"]
+        )
+        await interaction.response.send_message(
+            "Set.",
+            ephemeral=True,
+            delete_after=bot.zeroth_ring["interface"]["timeout"]
+        )
+
+    @bot.tree.command()
+    async def nickname(
+        interaction: discord.Interaction,
+        nickname: Optional[discord.app_commands.Range[str, 1, 32]]
+    ):
+        await interaction.guild.me.edit(
+            nick=nickname
         )
         await interaction.response.send_message(
             "Set.",
