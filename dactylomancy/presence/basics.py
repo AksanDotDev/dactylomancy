@@ -1,4 +1,5 @@
 import discord
+import tomlkit
 from discord.ext import commands
 from typing import Optional
 
@@ -11,6 +12,14 @@ status_mapping = {
 
 
 async def setup(bot: commands.Bot):
+
+    if "presence" not in bot.zeroth_ring:
+        config_table = tomlkit.table()
+        config_table["status"] = "online"
+        config_table["follow"] = False
+        config_table["activity"] = False
+        config_table["message"] = False
+        bot.zeroth_ring["presence"] = config_table
 
     async def update_status(new_status):
         new_status = discord.Status[new_status]

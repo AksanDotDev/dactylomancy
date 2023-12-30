@@ -1,4 +1,5 @@
 import discord
+import tomlkit
 from discord.ext import commands
 from typing import Optional
 
@@ -39,6 +40,11 @@ class EditModal(discord.ui.Modal, title="Edit"):
 
 
 async def setup(bot: commands.Bot):
+
+    if "interface" not in bot.zeroth_ring:
+        config_table = tomlkit.table()
+        config_table["timeout"] = 0.0
+        bot.zeroth_ring["interface"] = config_table
 
     @bot.tree.command()
     async def echo(

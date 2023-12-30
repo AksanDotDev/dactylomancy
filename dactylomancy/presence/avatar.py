@@ -35,6 +35,9 @@ for i in range(0, 24, 4):
 
 async def setup(bot: commands.Bot):
 
+    if "makeup" not in bot.zeroth_ring["presence"]:
+        bot.zeroth_ring["presence"]["makeup"] = False
+
     def get_current_avatar_folder():
         now = datetime.datetime.utcnow()
         if now.month in simple_dates:

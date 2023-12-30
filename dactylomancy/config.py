@@ -19,21 +19,17 @@ class ZerothRing():
         else:
             discord_logging()
 
-        if "interface" not in self.state:
-            interface = tomlkit.table()
-            interface["timeout"] = 0.0
-            self.state["interface"] = interface
-
-        if "presence" not in self.state:
-            presence = tomlkit.table()
-            presence["status"] = "online"
-            presence["follow"] = False
-            presence["activity"] = False
-            presence["message"] = False
-            self.state["presence"] = presence
-
     def __getitem__(self, key):
         return self.state[key]
+
+    def __setitem__(self, key, value):
+        self.state[key] = value
+
+    def __delitem__(self, key):
+        del self.state[key]
+
+    def __contains__(self, key):
+        return key in self.state
 
     def write_back(self):
         with open(self.path, "w") as config_file:

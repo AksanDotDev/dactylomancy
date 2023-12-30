@@ -9,6 +9,7 @@ intents = discord.Intents.default()
 
 intents.presences = True
 intents.members = True
+intents.dm_messages = True
 
 hand = commands.Bot(
     command_prefix=commands.when_mentioned,
@@ -34,6 +35,7 @@ async def on_ready():
 
 async def load_extensions():
     await hand.load_extension("speech.basics")
+    await hand.load_extension("speech.dm_warn_and_log")
     await hand.load_extension("presence.basics")
     await hand.load_extension("presence.avatar")
 

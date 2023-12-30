@@ -10,7 +10,7 @@ scribe = <snowflake-id>
 # i.e. the standard user account that will type the messages.
 
 [logging]
-filename = "./dactylomancy.log"
+filename = "/res/dactylomancy.log"
 level = "WARNING"
 
 [interface]
