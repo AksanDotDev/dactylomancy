@@ -1,6 +1,6 @@
 import datetime
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from pathlib import Path
 
 
@@ -51,6 +51,7 @@ async def setup(bot: commands.Bot):
             avatar_folder = resources / season
         return avatar_folder
 
+    @tasks.loop(time=update_times)
     async def update_avatar():
         avatar_folder = get_current_avatar_folder()
         with open(avatar_folder / "avatar.png", "rb") as avatar:
