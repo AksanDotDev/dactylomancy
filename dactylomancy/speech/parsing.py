@@ -57,22 +57,23 @@ protomoji_list = [
     Protomoji("smiling_imp", before_eyes=["]"], mouth=[")"]),
 ]
 
-
 shortmoji_list = [
     Shortmoji(":heart:", ["<3"]),
     Shortmoji(":broken_heart:", ["</3"]),
 ]
 
+non_functioning_patterns = [
+    "O=)", "o=)", "O=-)", "o=-)",
+    ":-s", "=-s", ":-z", "=-z"
+]
 
-def produce_test_string() -> str:
-    shortmoji_list.extend(
-        [inflate(p) for p in protomoji_list]
-    )
-    buffer = "Begin Test:\n"
-    for s in shortmoji_list:
-        buffer += f"{s.shortcode}  - \n  "
-        for p in s.patterns:
-            buffer += p + "\n  "
-        buffer += "\n"
-    buffer += "End Test"
-    return buffer
+full_shortmoji_list = shortmoji_list + [inflate(p) for p in protomoji_list]
+
+patterns_dict = dict()
+# Populate the patterns dict with each patter and the shortcode
+for s in full_shortmoji_list:
+    for p in s.patterns:
+        patterns_dict[p] = s.shortcode
+# Remove the codes that don't work
+for nfp in non_functioning_patterns:
+    del patterns_dict[nfp]
