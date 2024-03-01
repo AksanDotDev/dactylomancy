@@ -1,4 +1,5 @@
 from typing import NamedTuple, List
+import regex
 
 
 class Protomoji(NamedTuple):
@@ -18,7 +19,7 @@ class Shortmoji(NamedTuple):
 
 def apply_options(roots: List[str], options: List[str]) -> List[str]:
     if options:
-        return [r + o for o in options for r in roots]   
+        return [r + o for o in options for r in roots]
     else:
         return roots
 
@@ -67,6 +68,7 @@ non_functioning_patterns = [
     ":-s", "=-s", ":-z", "=-z"
 ]
 
+
 full_shortmoji_list = shortmoji_list + [inflate(p) for p in protomoji_list]
 
 patterns_dict = dict()
@@ -77,3 +79,13 @@ for s in full_shortmoji_list:
 # Remove the codes that don't work
 for nfp in non_functioning_patterns:
     del patterns_dict[nfp]
+
+word_regex = regex.compile(r"(\S+)")
+
+
+def get_emoji(pattern: regex.Match) -> str:
+    return patterns_dict.get(pattern.group(), pattern.group())
+
+
+def emojify(body: str) -> str:
+    return word_regex.sub(get_emoji, body)
