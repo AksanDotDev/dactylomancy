@@ -2,6 +2,7 @@ import discord
 import tomlkit
 from discord.ext import commands
 from typing import Optional
+from speech.parsing import emojify
 
 
 class ReplyModal(discord.ui.Modal, title="Reply"):
@@ -17,7 +18,7 @@ class ReplyModal(discord.ui.Modal, title="Reply"):
 
     async def on_submit(self, interaction: discord.Interaction):
         await self.message.reply(
-            self.body,
+            emojify(self.body),
             mention_author=self.mention
         )
         await interaction.response.defer(thinking=False)
@@ -35,7 +36,7 @@ class EditModal(discord.ui.Modal, title="Edit"):
         self.body.default = self.message.content
 
     async def on_submit(self, interaction: discord.Interaction):
-        await self.message.edit(content=self.body)
+        await self.message.edit(content=emojify(self.body))
         await interaction.response.defer(thinking=False)
 
 
@@ -51,7 +52,7 @@ async def setup(bot: commands.Bot):
         interaction: discord.Interaction,
         body: str
     ):
-        await interaction.channel.send(body)
+        await interaction.channel.send(emojify(body))
         await interaction.response.send_message(
             "Sent.",
             ephemeral=True,
@@ -67,7 +68,7 @@ async def setup(bot: commands.Bot):
     ):
         att_file = await attachment.to_file(spoiler=bool(spoiler))
         await interaction.channel.send(
-            caption,
+            emojify(caption),
             file=att_file
         )
         await interaction.response.send_message(

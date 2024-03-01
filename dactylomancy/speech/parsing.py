@@ -1,5 +1,5 @@
 from typing import NamedTuple, List
-import regex
+import re
 
 
 class Protomoji(NamedTuple):
@@ -80,10 +80,10 @@ for s in full_shortmoji_list:
 for nfp in non_functioning_patterns:
     del patterns_dict[nfp]
 
-word_regex = regex.compile(r"(\S+)")
+word_regex = re.compile(r"(\S+)")
 
 
-def get_emoji(pattern: regex.Match) -> str:
+def get_emoji(pattern: re.Match) -> str:
     return patterns_dict.get(pattern.group(), pattern.group())
 
 
