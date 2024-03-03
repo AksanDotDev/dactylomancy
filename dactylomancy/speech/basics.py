@@ -18,7 +18,7 @@ class ReplyModal(discord.ui.Modal, title="Reply"):
 
     async def on_submit(self, interaction: discord.Interaction):
         await self.message.reply(
-            emojify(self.body),
+            emojify(str(self.body)),
             mention_author=self.mention
         )
         await interaction.response.defer(thinking=False)
@@ -36,7 +36,7 @@ class EditModal(discord.ui.Modal, title="Edit"):
         self.body.default = self.message.content
 
     async def on_submit(self, interaction: discord.Interaction):
-        await self.message.edit(content=emojify(self.body))
+        await self.message.edit(content=emojify(str(self.body)))
         await interaction.response.defer(thinking=False)
 
 
