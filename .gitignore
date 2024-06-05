@@ -136,3 +136,4 @@ test.toml
 
 # Non-code Resources
 resources/
+compose.yaml
