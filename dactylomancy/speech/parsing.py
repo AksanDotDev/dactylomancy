@@ -89,3 +89,15 @@ def get_emoji(pattern: re.Match) -> str:
 
 def emojify(body: str) -> str:
     return word_regex.sub(get_emoji, body)
+
+
+message_link_regex = re.compile(r"^https:\/\/discord\.com\/channels\/\d+\/\d+\/(?P<message_id>\d+)$")
+
+
+def get_message_snowflake(input_str: str) -> int:
+    if input_str.isdigit():
+        return int(input_str)
+    elif result := message_link_regex.match(input_str):
+        return int(result["message_id"])
+    else:
+        raise ValueError(f"Could not parse string: \"{input_str}\" for message id.")
