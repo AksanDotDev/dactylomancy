@@ -2,7 +2,7 @@ import discord
 import tomlkit
 from discord.ext import commands
 from typing import Optional
-from speech.parsing import emojify
+from speech.parsing import emojify, get_message_snowflake
 
 
 class ReplyModal(discord.ui.Modal, title="Reply"):
@@ -50,20 +50,97 @@ async def setup(bot: commands.Bot):
     @bot.tree.command()
     async def echo(
         interaction: discord.Interaction,
-        body: str
+        body: str,
+        reply: Optional[str] = None,
+        mention: Optional[bool] = False,
+        silent: Optional[bool] = False
     ):
-        await interaction.channel.send(emojify(body))
-        await interaction.response.send_message(
-            "Sent.",
-            ephemeral=True,
-            delete_after=bot.zeroth_ring["interface"]["timeout"]
-        )
+        if reply:
+            try:
+                msg_id = get_message_snowflake(reply)
+                msg = interaction.channel.get_partial_message(msg_id)
+                await msg.reply(
+                    emojify(body),
+                    mention_author=mention,
+                    silent=silent
+                )
+                await interaction.response.send_message(
+                    "Replied.",
+                    ephemeral=True,
+                    delete_after=bot.zeroth_ring["interface"]["timeout"]
+                )
+            except ValueError:
+                await interaction.response.send_message(
+                    "Error in reply pararmeter, could not parse.",
+                    ephemeral=True,
+                )
+            except TypeError:
+                await interaction.response.send_message(
+                    "Error in replying, could not find message.",
+                    ephemeral=True,
+                )
+        else:
+            await interaction.channel.send(
+                emojify(body),
+                silent=silent
+            )
+            await interaction.response.send_message(
+                "Sent.",
+                ephemeral=True,
+                delete_after=bot.zeroth_ring["interface"]["timeout"]
+            )
+
+    @bot.tree.command()
+    async def thread(
+        interaction: discord.Interaction,
+        name: str,
+        body: str,
+        root: Optional[str] = ""
+    ):
+        if root:
+            try:
+                msg_id = get_message_snowflake(root)
+                msg = interaction.channel.get_partial_message(msg_id)
+                thread = await msg.create_thread(
+                    name=name
+                )
+                await thread.send(
+                    emojify(body)
+                )
+                await interaction.response.send_message(
+                    "Thread created.",
+                    ephemeral=True,
+                    delete_after=bot.zeroth_ring["interface"]["timeout"]
+                )
+            except ValueError:
+                await interaction.response.send_message(
+                    "Error in root pararmeter, could not parse.",
+                    ephemeral=True,
+                )
+            except TypeError:
+                await interaction.response.send_message(
+                    "Error in creation, could not find message.",
+                    ephemeral=True,
+                )
+        else:
+            thread = await interaction.channel.create_thread(
+                name=name,
+                type=discord.ChannelType.public_thread
+            )
+            await thread.send(
+                emojify(body)
+            )
+            await interaction.response.send_message(
+                "Thread created.",
+                ephemeral=True,
+                delete_after=bot.zeroth_ring["interface"]["timeout"]
+            )
 
     @bot.tree.command()
     async def upload(
         interaction: discord.Interaction,
         attachment: discord.Attachment,
-        spoiler: bool,
+        spoiler: Optional[bool] = False,
         caption: Optional[str] = ""
     ):
         att_file = await attachment.to_file(spoiler=bool(spoiler))
