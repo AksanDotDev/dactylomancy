@@ -5,25 +5,6 @@ from typing import Optional
 from speech.parsing import emojify, get_message_snowflake
 
 
-class ReplyModal(discord.ui.Modal, title="Reply"):
-    body = discord.ui.TextInput(
-        label="body",
-        style=discord.TextStyle.long
-    )
-
-    def __init__(self, *, message: discord.Message, mention: bool) -> None:
-        super().__init__()
-        self.message = message
-        self.mention = mention
-
-    async def on_submit(self, interaction: discord.Interaction):
-        await self.message.reply(
-            emojify(str(self.body)),
-            mention_author=self.mention
-        )
-        await interaction.response.defer(thinking=False)
-
-
 class EditModal(discord.ui.Modal, title="Edit"):
     body = discord.ui.TextInput(
         label="body",
@@ -152,26 +133,6 @@ async def setup(bot: commands.Bot):
             "Uploaded.",
             ephemeral=True,
             delete_after=bot.zeroth_ring["interface"]["timeout"]
-        )
-
-    @bot.tree.context_menu()
-    async def reply(
-        interaction: discord.Interaction,
-        message: discord.Message
-    ):
-        await interaction.response.send_modal(
-            ReplyModal(message=message, mention=True)
-        )
-
-    @bot.tree.context_menu(
-        name="Silent Reply"
-    )
-    async def silent_reply(
-        interaction: discord.Interaction,
-        message: discord.Message
-    ):
-        await interaction.response.send_modal(
-            ReplyModal(message=message, mention=False)
         )
 
     @bot.tree.context_menu()
