@@ -15,3 +15,4 @@ level = "WARNING"
 
 [interface]
 timeout = 0.0
+silent_success = true
