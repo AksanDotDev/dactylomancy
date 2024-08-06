@@ -91,6 +91,25 @@ def emojify(body: str) -> str:
     return word_regex.sub(get_emoji, body)
 
 
+newline_regex = re.compile(r"([^\\]\\n)")
+
+
+def add_newlines(body: str) -> str:
+    return newline_regex.sub("\n", body)
+
+
+formatting_functions = [
+    emojify,
+    add_newlines,
+]
+
+
+def format_message(body: str) -> str:
+    for f in formatting_functions:
+        body = f(body)
+    return body
+
+
 message_link_regex = re.compile(r"^https:\/\/discord\.com\/channels\/\d+\/\d+\/(?P<message_id>\d+)$")
 
 

@@ -2,7 +2,7 @@ import discord
 import tomlkit
 from discord.ext import commands
 from typing import Optional
-from speech.parsing import emojify, get_message_snowflake
+from speech.parsing import format_message, get_message_snowflake
 
 
 class EditModal(discord.ui.Modal, title="Edit"):
@@ -17,7 +17,7 @@ class EditModal(discord.ui.Modal, title="Edit"):
         self.body.default = self.message.content
 
     async def on_submit(self, interaction: discord.Interaction):
-        await self.message.edit(content=emojify(str(self.body)))
+        await self.message.edit(content=format_message(str(self.body)))
         await interaction.response.defer(thinking=False)
 
 
@@ -42,7 +42,7 @@ async def setup(bot: commands.Bot):
                 msg_id = get_message_snowflake(reply)
                 msg = interaction.channel.get_partial_message(msg_id)
                 await msg.reply(
-                    emojify(body),
+                    format_message(body),
                     mention_author=mention,
                     silent=silent
                 )
@@ -64,7 +64,7 @@ async def setup(bot: commands.Bot):
                 )
         else:
             await interaction.channel.send(
-                emojify(body),
+                format_message(body),
                 silent=silent
             )
             await interaction.response.send_message(
@@ -89,7 +89,7 @@ async def setup(bot: commands.Bot):
                     name=name
                 )
                 await thread.send(
-                    emojify(body)
+                    format_message(body)
                 )
                 await interaction.response.send_message(
                     "Thread created.",
@@ -113,7 +113,7 @@ async def setup(bot: commands.Bot):
                 type=discord.ChannelType.public_thread
             )
             await thread.send(
-                emojify(body)
+                format_message(body)
             )
             await interaction.response.send_message(
                 "Thread created.",
@@ -174,7 +174,7 @@ async def setup(bot: commands.Bot):
                 msg = interaction.channel.get_partial_message(msg_id)
 
                 await msg.reply(
-                    emojify(caption),
+                    format_message(caption),
                     mention_author=mention,
                     silent=silent,
                     files=att_files
@@ -204,7 +204,7 @@ async def setup(bot: commands.Bot):
                 )
         else:
             await interaction.channel.send(
-                emojify(caption),
+                format_message(caption),
                 silent=silent,
                 files=att_files
             )
