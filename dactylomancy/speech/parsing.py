@@ -83,15 +83,15 @@ for nfp in non_functioning_patterns:
 word_regex = re.compile(r"(\S+)")
 
 
-def get_emoji(pattern: re.Match) -> str:
-    return patterns_dict.get(pattern.group(), pattern.group())
+def get_emoji(match: re.Match) -> str:
+    return patterns_dict.get(match.group(), match.group())
 
 
 def emojify(body: str) -> str:
     return word_regex.sub(get_emoji, body)
 
 
-newline_regex = re.compile(r"([^\\]\\n)")
+newline_regex = re.compile(r"(?<=[^\\])(\\n)")
 
 
 def add_newlines(body: str) -> str:
