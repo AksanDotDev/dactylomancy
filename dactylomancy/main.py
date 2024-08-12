@@ -36,6 +36,7 @@ async def on_ready():
 async def load_extensions():
     await hand.load_extension("speech.basics")
     await hand.load_extension("speech.dm_warn_and_log")
+    await hand.load_extension("speech.stickers")
     await hand.load_extension("presence.basics")
     await hand.load_extension("presence.avatar")
 
