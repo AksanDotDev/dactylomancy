@@ -2,6 +2,12 @@
 
 title = "Basic Example"
 
+[features]
+cogs = [
+    "speech.basics",
+    "presence.basics",
+]
+
 [discord]
 token = <bot-token>
 # The token of the bot to be used as proxy.

@@ -2,6 +2,14 @@
 
 title = "Advanced Example"
 
+[features]
+cogs = [ # The cog modules to be loaded
+    "speech.basics",
+    "speech.dm_warn_and_log",
+    "speech.stickers",
+    "presence.basics",
+]
+
 [discord]
 token = <bot-token>
 # The token of the bot to be used as proxy.
@@ -16,3 +24,7 @@ level = "WARNING"
 [interface]
 timeout = 0.0
 silent_success = true
+
+[dm_warn_and_log]
+filename = "/res/dms.log"
+message = "I am not responding to dms, please reach out to a shared account or in a mutual server."
