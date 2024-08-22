@@ -21,9 +21,9 @@ async def setup(bot: commands.Bot):
     async def populate_stickers():
         for pack in await bot.fetch_premium_sticker_packs():
             for sticker in pack.stickers:
-                stickers[f"{sticker.name}.{pack.name}"] = sticker.id
+                stickers[f"{sticker.name}.{pack.name}"] = (sticker.id, None)
         for sticker in bot.stickers:
-            stickers[f"{sticker.name}.{sticker.guild.name}"] = sticker.id
+            stickers[f"{sticker.name}.{sticker.guild.name}"] = (sticker.id, sticker.guild.id)
 
     @bot.listen("on_ready")
     async def setup_presence():
@@ -39,7 +39,7 @@ async def setup(bot: commands.Bot):
         silent: Optional[bool] = False
     ):
         try:
-            sticker_obj = await bot.fetch_sticker(stickers[sticker_name])
+            sticker_obj = await bot.fetch_sticker(stickers[sticker_name][0])
         except KeyError:
             await interaction.response.send_message(
                 "Sticker not found in dictionary.",
@@ -97,5 +97,7 @@ async def setup(bot: commands.Bot):
     ) -> list[discord.app_commands.Choice[str]]:
         return [
             discord.app_commands.Choice(name=option, value=option)
-            for option in stickers.keys() if current.lower() in option.lower()
+            for option in stickers.keys()
+            if current.lower() in option.lower()
+            and (stickers[option][1] is None or stickers[option][1] == interaction.guild.id)
         ][:25]
