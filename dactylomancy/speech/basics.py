@@ -79,7 +79,7 @@ async def setup(bot: commands.Bot):
         interaction: discord.Interaction,
         name: str,
         body: str,
-        root: Optional[str] = ""
+        root: Optional[str] = None
     ):
         if root:
             try:
