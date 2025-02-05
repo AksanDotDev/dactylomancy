@@ -9,7 +9,7 @@ from speech.parsing import get_message_snowflake
 stickers = {}
 
 update_times = []
-for i in range(2, 26, 4):
+for i in range(2, 24, 4):
     update_times.append(datetime.time(
         hour=i, tzinfo=datetime.timezone.utc
     ))
