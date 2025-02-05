@@ -39,7 +39,7 @@ async def setup(bot: commands.Bot):
         bot.zeroth_ring["presence"]["makeup"] = False
 
     def get_current_avatar_folder():
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         if now.month in simple_dates:
             season = str(simple_dates[now.month])
         else:
