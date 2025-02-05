@@ -40,7 +40,7 @@ async def setup(bot: commands.Bot):
         if reply:
             try:
                 msg_id = get_message_snowflake(reply)
-                msg = interaction.channel.get_partial_message(msg_id)
+                msg = await interaction.channel.fetch_message(msg_id)
                 await msg.reply(
                     format_message(body),
                     mention_author=mention,
@@ -84,7 +84,7 @@ async def setup(bot: commands.Bot):
         if root:
             try:
                 msg_id = get_message_snowflake(root)
-                msg = interaction.channel.get_partial_message(msg_id)
+                msg = await interaction.channel.fetch_message(msg_id)
                 thread = await msg.create_thread(
                     name=name
                 )
@@ -171,7 +171,7 @@ async def setup(bot: commands.Bot):
         if reply:
             try:
                 msg_id = get_message_snowflake(reply)
-                msg = interaction.channel.get_partial_message(msg_id)
+                msg = await interaction.channel.fetch_message(msg_id)
 
                 await msg.reply(
                     format_message(caption),

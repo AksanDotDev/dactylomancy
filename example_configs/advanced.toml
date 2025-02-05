@@ -28,3 +28,9 @@ silent_success = true
 [dm_warn_and_log]
 filename = "/res/dms.log"
 message = "I am not responding to dms, please reach out to a shared account or in a mutual server."
+
+[lights]
+bridge_ip = "192.168.1.X"
+names = [ # List of light names to control
+    "Mood light",
+]
