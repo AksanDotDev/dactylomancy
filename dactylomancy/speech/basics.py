@@ -30,6 +30,17 @@ async def setup(bot: commands.Bot):
         bot.zeroth_ring["interface"] = config_table
 
     @bot.tree.command()
+    @discord.app_commands.user_install()
+    @discord.app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+    async def invoke(
+        interaction: discord.Interaction,
+        body: str
+    ):
+        await interaction.response.send_message(
+            body
+        )
+
+    @bot.tree.command()
     async def echo(
         interaction: discord.Interaction,
         body: str,

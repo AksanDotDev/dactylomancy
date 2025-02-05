@@ -1,2 +1,2 @@
-discord.py>2.3,<3
+discord.py>=2.4,<3
 tomlkit>0.12,<0.13
