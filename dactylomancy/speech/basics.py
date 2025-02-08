@@ -37,7 +37,7 @@ async def setup(bot: commands.Bot):
         body: str
     ):
         await interaction.response.send_message(
-            body
+            format_message(body)
         )
 
     @bot.tree.command()
