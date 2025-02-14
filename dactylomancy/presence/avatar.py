@@ -1,6 +1,7 @@
 import datetime
 import discord
 from discord.ext import commands, tasks
+from discord.utils import utcnow
 from pathlib import Path
 
 
@@ -39,7 +40,7 @@ async def setup(bot: commands.Bot):
         bot.zeroth_ring["presence"]["makeup"] = False
 
     def get_current_avatar_folder():
-        now = datetime.datetime.now(datetime.timezone.utc)
+        now = utcnow()
         if now.month in simple_dates:
             season = str(simple_dates[now.month])
         else:
