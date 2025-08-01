@@ -13,6 +13,15 @@ parser.add_argument(
     help='bot token acquired from https://discord.com/developers/applications for the indended application, only needed during initial setup or due to a token update',
     type=str,
     nargs='?',
+    metavar='TOKEN',
+)
+
+parser.add_argument(
+    'id',
+    help='user-id acquired from inside discord for the intented user, only needed during initial setup or due to a change in user account',
+    type=str,
+    nargs='?',
+    metavar='USER-ID',
 )
 
 parser.add_argument(

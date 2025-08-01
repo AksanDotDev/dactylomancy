@@ -30,7 +30,7 @@ def core_process(
 
     setup_logging(args.detail, args.logging, args.print)
     logging.info('Initializing configuration.')
-    state = initialise_config_state(args.config, args.token)
+    state = initialise_config_state(args.config, args.token, args.id)
 
     install_dependencies(state)
 

@@ -176,12 +176,16 @@ def validate_config_doc(doc: TOMLDocument) -> None:
         raise ValueError(mismatch_str)
 
 
-def initialise_config_state(filepath: pathlib.Path, token: Optional[str], snowflake: int = 0) -> DactylomancyState:
+def initialise_config_state(filepath: pathlib.Path, token: Optional[str], snowflake: Optional[int]) -> DactylomancyState:
 
     if not filepath.exists():
         if token is None:
             logging.critical('No token given, and no config file exists, exiting.')
             print('please provide a bot token or config file')
+            exit(1)
+        elif snowflake is None:
+            logging.critical('No user-id given, and no config file exists, exiting.')
+            print('please provide a user-id or config file')
             exit(1)
         else:
             config_file = TOMLFile(filepath)
