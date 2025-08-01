@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dactylomancy"
-version = "0.0.1"
+dynamic = ["version", "dependencies"]
 authors = [
     {name = "Alexis J S Payne", email = "alexis@aksan.dev"},
 ]
@@ -18,7 +18,6 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX",
     "Intended Audience :: End Users/Desktop",
-    "License :: OSI Approved :: MIT License",
     "Topic :: Communications :: Chat",
     "Topic :: Internet",
 
@@ -31,5 +30,10 @@ Homepage = "https://dactylomancy.aksan.dev/"
 Source = "https://git.aksan.dev/dactylomancy"
 Issue = "https://git.aksan.dev/dactylomancy/issues"
 
+[projects.scripts]
+dactylomancy = "dactylomancy._targets:launch_process"
+dactylomancy-config = "dactylomancy.config._targets:standalone_utility"
+
 [tool.setuptools.dynamic]
-version = {attr = "charlypfp.__version__"}
+version = {attr = "dactylomancy.__version__"}
+dependencies = {file = "requirements.txt"}
