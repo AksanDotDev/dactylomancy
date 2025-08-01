@@ -476,7 +476,9 @@ class DactylomancyBot(discord.Client):
             except errors.ExtensionNotFound:
                 logging.warning(f'Could not find extension: {extension}, check spelling and if a dependency is required.')
             except errors.ExtensionAlreadyLoaded:
-                logging.warning(f'Found {extension} to already be loaded, check for duplication in .')
+                logging.warning(f'Found {extension} to already be loaded, check for duplication in your config.')
+            except errors.NoEntryPointError:
+                logging.warning(f'Found {extension} but it lacks a setup entry point, check if this is the intended import module.')
 
     async def reload_extensions(self) -> None:
         # TODO
