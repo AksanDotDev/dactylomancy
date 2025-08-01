@@ -1,2 +1,4 @@
-discord.py>=2.4,<3
-tomlkit>0.12,<0.13
+packaging>=25.0
+regex>=2024.11.6
+discord.py>=2.5
+tomlkit>0.13

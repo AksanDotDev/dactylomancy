@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dactylomancy"
+version = "0.0.1"
+authors = [
+    {name = "Alexis J S Payne", email = "alexis@aksan.dev"},
+]
+description = "A small example package"
+readme = "README.md"
+requires-python = ">=3.13"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Communications :: Chat",
+    "Topic :: Internet",
+
+]
+license = "MIT"
+license-files = ["LICENSE"]
+
+[project.urls]
+Homepage = "https://dactylomancy.aksan.dev/"
+Source = "https://git.aksan.dev/dactylomancy"
+Issue = "https://git.aksan.dev/dactylomancy/issues"
+
+[tool.setuptools.dynamic]
+version = {attr = "charlypfp.__version__"}

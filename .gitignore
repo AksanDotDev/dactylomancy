@@ -133,7 +133,9 @@ test.toml
 
 # Local config
 .vscode
+.editorconfig
 
 # Non-code Resources
 resources/
 compose.yaml
+*.log.*
