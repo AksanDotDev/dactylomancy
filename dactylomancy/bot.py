@@ -378,14 +378,14 @@ class DactylomancyBot(discord.Client):
         else:
             self.__extensions[key] = lib
 
-    def _resolve_name(self, name: str, package: Optional[str]) -> str:
+    def _resolve_name(self, name: str) -> str:
         try:
-            return importlib.util.resolve_name(name, package)
+            return importlib.util.resolve_name(name, None)
         except ImportError:
             raise errors.ExtensionNotFound(name)
 
-    async def load_extension(self, name: str, *, package: Optional[str] = None) -> None:
-        name = self._resolve_name(name, package)
+    async def load_extension(self, name: str) -> None:
+        name = self._resolve_name(name)
         if name in self.__extensions:
             raise errors.ExtensionAlreadyLoaded(name)
 
@@ -395,8 +395,8 @@ class DactylomancyBot(discord.Client):
 
         await self._load_from_module_spec(spec, name)
 
-    async def unload_extension(self, name: str, *, package: Optional[str] = None) -> None:
-        name = self._resolve_name(name, package)
+    async def unload_extension(self, name: str) -> None:
+        name = self._resolve_name(name)
         lib = self.__extensions.get(name)
         if lib is None:
             raise errors.ExtensionNotLoaded(name)
@@ -404,8 +404,8 @@ class DactylomancyBot(discord.Client):
         await self._remove_module_references(lib.__name__)
         await self._call_module_finalizers(lib, name)
 
-    async def reload_extension(self, name: str, *, package: Optional[str] = None) -> None:
-        name = self._resolve_name(name, package)
+    async def reload_extension(self, name: str) -> None:
+        name = self._resolve_name(name)
         lib = self.__extensions.get(name)
         if lib is None:
             raise errors.ExtensionNotLoaded(name)
@@ -467,10 +467,11 @@ class DactylomancyBot(discord.Client):
             self._followup_url = None
 
     async def load_extensions(self, override: Optional[Sequence[str]] = None) -> None:
+        extensions = CORE_EXTENSIONS
         if override:
-            extensions = override
+            extensions.extend(override)
         else:
-            extensions = self.config['core']['extensions']
+            extensions.extend(self.config['core']['extensions'])
 
         for extension in extensions:
             _log.debug(f'Attempted to load extension: {extension}.')
