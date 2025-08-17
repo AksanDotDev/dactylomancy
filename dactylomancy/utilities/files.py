@@ -3,6 +3,8 @@ import tempfile
 from tomlkit import dumps
 from tomlkit.toml_document import TOMLDocument
 
+_log = logging.getLogger(__name__)
+
 
 class TemporaryTextFile(object):
     suffix = '.txt'
@@ -16,13 +18,13 @@ class TemporaryTextFile(object):
             suffix=self.suffix,
             delete_on_close=False
         )
-        logging.debug(f'Created temporary file: {self.file.name}')
+        _log.debug(f'Created temporary file: {self.file.name}')
         self.file.write(self.text)
         self.file.close()
         return self.file.name
 
     def __exit__(self, *exc_info):
-        logging.debug(f'Deleting temporary file {self.file.name}.')
+        _log.debug(f'Attempting to delete temporary file {self.file.name}.')
 
 
 class TemporaryTOMLFile(TemporaryTextFile):

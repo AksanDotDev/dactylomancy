@@ -10,6 +10,8 @@ from .config.logging import setup_logging
 from .config.state import initialise_config_state
 from .extensions.loading import install_dependencies, update_self
 
+_log = logging.getLogger(__name__)
+
 
 def launch_process():
     # Process CLI arguments
@@ -29,18 +31,18 @@ def core_process(
 ):
 
     setup_logging(args.detail, args.logging, args.print)
-    logging.info('Initializing configuration.')
+    _log.info('Initializing configuration.')
     state = initialise_config_state(args.config, args.token, args.id)
 
-    install_dependencies(state)
+    install_dependencies(state['core']['dependencies'])
 
     if args.sync:
         state['core']['sync_on_init'] = True
         args.sync = False
 
-    logging.info('Creating bot.')
+    _log.info('Creating bot.')
     bot = DactylomancyBot(state, args, login_lock, followup_url)
-    logging.info('Running initialisation.')
+    _log.info('Running initialisation.')
     asyncio.run(core_async_loop(bot))
 
 
@@ -62,19 +64,15 @@ def update_process(
 ):
 
     setup_logging(args.detail, args.logging, args.print)
-    logging.info('Beginning update process.')
+    _log.info('Beginning update process.')
 
     with login_lock:  # Use to prevent attempts to update while the bot it logged in
         print('This is where I would run self update, IF I HAD ANY!!!')
         update_self()
 
-    logging.info('Relaunching core process.')
+    _log.info('Relaunching core process.')
     new_core_process = multiprocessing.Process(
         target=core_process,
-        args=(
-            args,
-            login_lock,
-            followup_url,
-        )
+        args=(args, login_lock, followup_url)
     )
     new_core_process.start()

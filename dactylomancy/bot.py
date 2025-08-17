@@ -38,6 +38,9 @@ from .config.state import DactylomancyState
 from . import __title__
 from .utilities.embeds import ReferenceEmbed
 from .utilities.parsing import TextMessageParser
+from .extensions import CORE_EXTENSIONS
+
+_log = logging.getLogger(__name__)
 
 DEFAULT_CONTEXTS = discord.app_commands.AppCommandContext(guild=True, dm_channel=True, private_channel=True)
 DEFAULT_INSTALLS = discord.app_commands.AppInstallationType(guild=False, user=True)
@@ -188,7 +191,7 @@ class DactylomancyTree(discord.app_commands.CommandTree):
             self._remove_prefix()
 
     def _create_prefix(self, prefix: str):
-        logging.debug(f'Creating new prefix group for {prefix}.')
+        _log.debug(f'Creating new prefix group for {prefix}.')
 
         # Clear existing commands from root
         existing_commands = self.get_commands(type=AppCommandType.chat_input)
@@ -207,7 +210,7 @@ class DactylomancyTree(discord.app_commands.CommandTree):
             self.prefix_group.add_command(command)
 
     def _modify_prefix(self, prefix: str):
-        logging.debug(f'Modifying prefix group from {self.prefix_group.name} to {prefix}.')
+        _log.debug(f'Modifying prefix group from {self.prefix_group.name} to {prefix}.')
 
         # Clear existing commands from root
         existing_commands = self.prefix_group.commands
@@ -227,7 +230,7 @@ class DactylomancyTree(discord.app_commands.CommandTree):
             self.prefix_group.add_command(command)
 
     def _remove_prefix(self):
-        logging.debug(f'Removing prefix group {self.prefix_group.name}.')
+        _log.debug(f'Removing prefix group {self.prefix_group.name}.')
 
         # Clear existing commands from root
         existing_commands = self.prefix_group.commands
@@ -437,7 +440,7 @@ class DactylomancyBot(discord.Client):
     async def setup_hook(self) -> None:
         # Sync commands if flag for it set
         if self.config['core']['sync_on_init']:
-            logging.info('Syncing command tree on initialisation.')
+            _log.info('Syncing command tree on initialisation.')
             await self.tree.sync()
             self.config['core']['sync_on_init'] = False
             self.config.write_out()
@@ -470,15 +473,15 @@ class DactylomancyBot(discord.Client):
             extensions = self.config['core']['extensions']
 
         for extension in extensions:
-            logging.debug(f'Attempted to load extension: {extension}.')
+            _log.debug(f'Attempted to load extension: {extension}.')
             try:
                 await self.load_extension(extension)
             except errors.ExtensionNotFound:
-                logging.warning(f'Could not find extension: {extension}, check spelling and if a dependency is required.')
+                _log.warning(f'Could not find extension: {extension}, check spelling and if a dependency is required.')
             except errors.ExtensionAlreadyLoaded:
-                logging.warning(f'Found {extension} to already be loaded, check for duplication in your config.')
+                _log.warning(f'Found {extension} to already be loaded, check for duplication in your config.')
             except errors.NoEntryPointError:
-                logging.warning(f'Found {extension} but it lacks a setup entry point, check if this is the intended import module.')
+                _log.warning(f'Found {extension} but it lacks a setup entry point, check if this is the intended import module.')
 
     async def reload_extensions(self) -> None:
         # TODO

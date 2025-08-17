@@ -5,6 +5,13 @@ from ..bot import DactylomancyBot
 from .. import __title__
 from .._targets import core_process, update_process
 from ..utilities.views import ConfirmationQuery
+from .loading import get_available_extensions
+
+__dactylomancy_dependencies__ = [
+    f'{__title__}.config.commands',
+]
+
+_log = logging.getLogger(__name__)
 
 
 async def setup(bot: DactylomancyBot):
@@ -12,7 +19,7 @@ async def setup(bot: DactylomancyBot):
     # Main body for feature commands to be added
 
     if bot.config_group:
-        logging.debug('Adding config commands for extension tasks.')
+        _log.debug('Adding config commands for extension tasks.')
 
         @bot.config_group.command(
             name='shutdown',
@@ -45,7 +52,7 @@ async def setup(bot: DactylomancyBot):
                 delete_after=bot.config['config']['embed_duration']
             )
             if view.proceed:
-                logging.info('Shutting down bot.')
+                _log.info('Shutting down bot.')
                 await bot.close()
 
         @bot.config_group.command(
@@ -85,9 +92,9 @@ async def setup(bot: DactylomancyBot):
                         view.interaction.followup.url,
                     )
                 )
-                logging.info('Spawning update process.')
+                _log.info('Spawning update process.')
                 new_update_process.start()
-                logging.info('Shuting down bot.')
+                _log.info('Shuting down bot.')
                 await bot.close()
 
         @bot.config_group.command(
@@ -127,7 +134,7 @@ async def setup(bot: DactylomancyBot):
                         view.interaction.followup.url,
                     )
                 )
-                logging.info('Spawning new core process.')
+                _log.info('Spawning new core process.')
                 new_update_process.start()
-                logging.info('Shuting down bot.')
+                _log.info('Shuting down bot.')
                 await bot.close()

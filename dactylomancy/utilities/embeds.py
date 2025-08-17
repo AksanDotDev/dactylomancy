@@ -1,5 +1,4 @@
 import discord
-import logging
 
 from .. import __title__, __url__
 
@@ -14,7 +13,6 @@ class ReferenceEmbed(discord.Embed):
         )
 
     def get_simple_embed(self, title: str, description: str) -> discord.Embed:
-        logging.debug('Copying and creating a new simple config embed.')
         # Create a shallow copy for editing
         output = self.copy()
         output.title = title

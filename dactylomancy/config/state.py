@@ -12,9 +12,9 @@ from tomlkit.items import Table, Array, Item
 from tomlkit.toml_file import TOMLFile
 from tomlkit.toml_document import TOMLDocument
 
+_log = logging.getLogger(__name__)
+
 DEFAULT_EXTENSIONS = [
-    'dactylomancy.config.commands',
-    'dactylomancy.extensions.commands',
     'dactylomancy.text.commands',
     'dactylomancy.presence.commands',
 ]
@@ -59,20 +59,20 @@ class DactylomancyState:
     def get_table(self, key: str) -> DactylomancyTable:
         if key in self.doc.keys():
             if type(self.doc[key]) is Table:
-                logging.debug(f'Returning {DactylomancyTable.__name__} object for: {key}.')
+                _log.debug(f'Returning {DactylomancyTable.__name__} object for: {key}.')
                 return DactylomancyTable(self.doc[key], self.write_out)  # type: ignore[arg-type]
             else:
                 raise ValueError(f'key: {key} found but does not correspond to a table')
         else:
-            logging.info(f'Creating new config table for: {key}.')
+            _log.info(f'Creating new config table for: {key}.')
             new_table = tomlkit.table()
             new_table.indent(TABLE_INDENTATION)
             self.doc.append(key, new_table)
-            logging.debug(f'Returning {DactylomancyTable.__name__} object for: {key}.')
+            _log.debug(f'Returning {DactylomancyTable.__name__} object for: {key}.')
             return DactylomancyTable(new_table, self.write_out)
 
     def write_out(self) -> None:
-        logging.debug(f'Writing out to {self.file._path} with updated config.')
+        _log.debug(f'Writing out to {self.file._path} with updated config.')
         self.file.write(self.doc)
 
     def get_sanitised_doc(self) -> TOMLDocument:
@@ -93,19 +93,19 @@ class DactylomancyState:
         s_arr = self.doc['core']['sanitisations']
         assert type(s_arr) is Array
         s_arr.append(tomlkit.array(list(keys)))  # type: ignore[arg-type]
-        logging.debug(f'{'.'.join(keys)} added to sanitised variables.')
+        _log.debug(f'{'.'.join(keys)} added to sanitised variables.')
 
     def __getitem__(self, key: str):
         return self.doc[key]
 
     def __setitem__(self, key: str, value: Union[Item | Table]):
         self.doc[key] = value
-        logging.debug(f'Setting {key} to {value} in main config.')
+        _log.debug(f'Setting {key} to {value} in main config.')
         self.write_out()
 
     def __delitem__(self, key: str):
         del self.doc[key]
-        logging.debug(f'Deleting {key} from main config.')
+        _log.debug(f'Deleting {key} from main config.')
         self.write_out()
 
     def __contains__(self, key: str):
@@ -180,36 +180,36 @@ def initialise_config_state(filepath: pathlib.Path, token: Optional[str], snowfl
 
     if not filepath.exists():
         if token is None:
-            logging.critical('No token given, and no config file exists, exiting.')
-            print('please provide a bot token or config file')
+            _log.critical('No token given, and no config file exists, exiting.')
+            print('please provide a bot token via command line argument, environment variable, or config file')
             exit(1)
         elif snowflake is None:
-            logging.critical('No user-id given, and no config file exists, exiting.')
-            print('please provide a user-id or config file')
+            _log.critical('No user-id given, and no config file exists, exiting.')
+            print('please provide a user-id via command line argument, environment variable, or config file')
             exit(1)
         else:
             config_file = TOMLFile(filepath)
-            logging.info(f'Creating new config file: {filepath}')
+            _log.info(f'Creating new config file: {filepath}')
             config_doc = create_config_doc(token, snowflake)
             config_file.write(config_doc)
     elif filepath.exists() and not filepath.is_file():
-        logging.critical(f'{filepath} is a directory, exiting.')
+        _log.critical(f'{filepath} is a directory, exiting.')
         print(f'please provide a complete config file path, {filepath} is a directory or folder')
         exit(1)
     else:
         config_file = TOMLFile(filepath)
-        logging.debug(f'Attempting to parse {filepath} as config file.')
+        _log.debug(f'Attempting to parse {filepath} as config file.')
         try:
             config_doc = config_file.read()
             validate_config_doc(config_doc)
         except TOMLKitError as exc:
-            logging.critical(f'Error while parsing {filepath}, exiting.', exc_info=exc)
+            _log.critical(f'Error while parsing {filepath}, exiting.', exc_info=exc)
             print(f'config file {filepath} could not be parsed, please check the file is correct')
             exit(1)
         except ValueError as exc:
-            logging.critical(f'Error while validating {filepath}, exiting.', exc_info=exc)
+            _log.critical(f'Error while validating {filepath}, exiting.', exc_info=exc)
             print(f'config file {filepath} could not be validated, please check the file is correct')
             exit(1)
-        logging.debug(f'Parsed and validated {filepath} as a toml file.')
+        _log.debug(f'Parsed and validated {filepath} as a toml file.')
 
     return DactylomancyState(config_file, config_doc)
