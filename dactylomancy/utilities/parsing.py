@@ -27,6 +27,17 @@ def register_text_message_parser(name: str):
     return registering_function
 
 
+@register_text_message_parser(
+    name='newlines'
+)
+class NewlineParser(TextMessageParser):
+
+    description = 'A parser that convertsany instance of \'\\n\' into a new line'
+
+    def __call__(self, input_txt: str) -> str:
+        return NEWLINE_REGEX.sub('\n', input_txt)
+
+
 class Protomoji(NamedTuple):
     shortcode: str
     before_eyes: List[str] = []
@@ -46,6 +57,8 @@ class Shortmoji(NamedTuple):
     name='emoji'
 )
 class EmojiParser(TextMessageParser):
+
+    description = 'A parser intended to match the convert emoticons function for a traditional Discord user.'
 
     protomoji_list = [
         Protomoji('slight_smile', mouth=[')']),
@@ -113,15 +126,6 @@ class EmojiParser(TextMessageParser):
 
     def __call__(self, input_txt: str) -> str:
         return WORD_REGEX.sub(self.get_emoji, input_txt)
-
-
-@register_text_message_parser(
-    name='newlines'
-)
-class NewlineParser(TextMessageParser):
-
-    def __call__(self, input_txt: str) -> str:
-        return NEWLINE_REGEX.sub('\n', input_txt)
 
 
 class JumpURLResponse(NamedTuple):
