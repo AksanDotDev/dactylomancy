@@ -5,10 +5,13 @@ import discord
 from typing import Optional
 
 from ..bot import DactylomancyBot
-from ..utilities.views import ConfirmationQuery
+from ..utilities.views import ConfirmationQuery, SelectionQuery, generate_options
 from ..utilities.embeds import ReferenceErrorEmbed
 from ..utilities.parsing import PARSERS
 from ..utilities.files import TemporaryTextFile
+
+
+_log = logging.getLogger(__name__)
 
 
 # The key under which to store the configuration information
@@ -45,19 +48,19 @@ async def setup(bot: DactylomancyBot):
         bot.active_parsers = []
         unfound = []
         for parser_key in config_table['parsers']:
-            logging.debug(f'Attempting to add active parser: {parser_key}')
+            _log.debug(f'Attempting to add active parser: {parser_key}')
             if parser_key in PARSERS:
                 bot.active_parsers.append(PARSERS[parser_key])
             else:
                 unfound.append(parser_key)
-                logging.info(f'Skipping over, and marking for removal unfound parser: {parser_key}')
+                _log.warning(f'Skipping over, and marking for removal unfound parser: {parser_key}')
         for parser_key in unfound:
             config_table['parsers'].remove(parser_key)
 
     build_parser_stack()
 
     if bot.config_group:
-        logging.debug('Adding config command for text settings.')
+        _log.debug('Adding config command for text settings.')
 
         @bot.config_group.command(
             name='text-settings',
@@ -65,19 +68,11 @@ async def setup(bot: DactylomancyBot):
         )
         @discord.app_commands.describe(
             duration='The time, in seconds, for a text ephemeral to last.',
-            enable_parser='Parser(s) to enable as a comma separated list.',
-            disable_parser='Parser(s) to enable as a comma separated list.',
-        )
-        @discord.app_commands.rename(
-            enable_parser='enable-parser-s',
-            disable_parser='disable-parser-s',
         )
         @bot.user_only()
         async def text_settings(
             interaction: discord.Interaction,
             duration: Optional[discord.app_commands.Range[int, 0, 900]],
-            enable_parser: Optional[str],
-            disable_parser: Optional[str],
         ):
             embed: discord.Embed = bot.config_embed.get_simple_embed(
                 'Text Settings', ''
@@ -85,7 +80,7 @@ async def setup(bot: DactylomancyBot):
             update_message = ''
 
             if duration is not None:
-                logging.debug(f'Setting text ephemeral duration to {duration} seconds.')
+                _log.debug(f'Setting text ephemeral duration to {duration} seconds.')
                 config_table['ephemeral_duration'] = duration
                 update_message = 'Text ephemeral duration updated.\n'
             else:
@@ -95,43 +90,110 @@ async def setup(bot: DactylomancyBot):
                 value=f'{update_message}`{config_table['ephemeral_duration']}`',
             )
 
-            rebuild = False
-            if enable_parser:
-                for parser_key in map(lambda s: s.strip(), enable_parser.split(',')):
-                    if parser_key in config_table['parsers']:
-                        update_message += f'`{parser_key}` already enabled, skipping.\n'
-                    elif parser_key not in PARSERS:
-                        update_message += f'`{parser_key}` not in , skipping.\n'
-                    else:
-                        config_table['parsers'].append(parser_key)
-                        update_message += f'`{parser_key}` enabled.\n'
-                        rebuild = True
-            if disable_parser:
-                for parser_key in map(lambda s: s.strip(), disable_parser.split(',')):
-                    if parser_key not in config_table['parsers']:
-                        update_message += f'`{parser_key}` is not enabled, skipping.\n'
-                    else:
-                        config_table['parsers'].remove(parser_key)
-                        update_message += f'`{parser_key}` disabled.\n'
-                        rebuild = True
-            if rebuild:
-                build_parser_stack()
-
             if config_table['parsers']:
                 parsers_display_str = f'{'`\n`'.join(config_table['parsers'])}'
             else:
                 parsers_display_str = 'None'
             embed.add_field(
                 name='Parsers',
-                value=f'{update_message}`{parsers_display_str}`',
+                value=f'`{parsers_display_str}`',
             )
 
-            logging.debug('Returning text settings.')
             await interaction.response.send_message(
                 embed=embed,
                 ephemeral=True,
                 delete_after=bot.config['config']['embed_duration'],
             )
+
+        @bot.config_group.command(
+            name='select-parsers',
+            description='Allows the selection of the chosen parsers for text messages.'
+        )
+        @bot.user_only()
+        async def select_parsers(
+            interaction: discord.Interaction,
+        ):
+            options = generate_options(
+                labels=PARSERS.keys(),
+                descriptions=map(
+                    lambda x: x.description,
+                    PARSERS.values(),
+                ),
+                defaults=config_table['parsers'],
+            )
+            select_view = SelectionQuery(
+                'No parsers enabled',
+                options,
+            )
+
+            query_message = await interaction.response.send_message(
+                embed=bot.config_embed.get_simple_embed(
+                    'Parsers',
+                    'Select your desired parser functions below.'
+                ),
+                view=select_view,
+                ephemeral=True,
+                delete_after=None
+            )
+            await select_view.wait()
+            await query_message.resource.delete()
+
+            old_parser_str = f'{'`\n`'.join(config_table['parsers'])}'
+            new_parser_str = f'{'`\n`'.join(select_view.values)}'
+            confirm_embed = bot.config_embed.get_simple_embed(
+                'Parsers',
+                'Confirm the changed specification.'
+            )
+            confirm_embed.add_field(
+                name='Current parsers',
+                value=f'`{old_parser_str}`',
+            )
+            confirm_embed.add_field(
+                name='Proposed parsers',
+                value=f'`{new_parser_str}`',
+            )
+
+            confirm_view = ConfirmationQuery()
+            query_message = await select_view.interaction.response.send_message(
+                embed=confirm_embed,
+                view=confirm_view,
+                ephemeral=True,
+                delete_after=None
+            )
+            await confirm_view.wait()
+            await query_message.resource.delete()
+
+            if confirm_view.proceed:
+                _log.debug(f'Changing active parsers to {select_view.values} and rebuilding.')
+                config_table['parsers'] = select_view.values
+                build_parser_stack()
+                embed: discord.Embed = bot.config_embed.get_simple_embed(
+                    'Parsers',
+                    'The list of active parsers has been updated and implemented.'
+                )
+                embed.add_field(
+                    name='Active parsers',
+                    value=f'`{new_parser_str}`',
+                )
+                await confirm_view.interaction.response.send_message(
+                    embed=embed,
+                    ephemeral=True,
+                    delete_after=bot.config['config']['embed_duration'],
+                )
+            else:
+                embed: discord.Embed = bot.config_embed.get_simple_embed(
+                    'Parsers',
+                    'The list of active parsers has been not been changed.'
+                )
+                embed.add_field(
+                    name='Active parsers',
+                    value=f'`{old_parser_str}`',
+                )
+                await confirm_view.interaction.response.send_message(
+                    embed=embed,
+                    ephemeral=True,
+                    delete_after=bot.config['config']['embed_duration'],
+                )
 
     # Main body for feature commands to be added
 
@@ -178,13 +240,13 @@ async def setup(bot: DactylomancyBot):
         name='invoke',
         description='Proxy a message, using either a response message, or a bot message, as appropriate.',
     )
-    @bot.user_only()
     @discord.app_commands.describe(
         text='The text of the message to be proxied.',
     )
     @discord.app_commands.rename(
         text='message',
     )
+    @bot.user_only()
     async def invoke(
         interaction: discord.Interaction,
         text: str,
